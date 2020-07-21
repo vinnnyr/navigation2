@@ -86,7 +86,7 @@ Status Spin::onRun(const std::shared_ptr<const SpinAction::Goal> command)
   RCLCPP_INFO(
     node_->get_logger(), "Turning %0.2f for spin recovery.",
     cmd_yaw_);
-  return Status::SUCCEEDED;
+  return Status::FAILED;
 }
 
 Status Spin::onCycleUpdate()
@@ -116,7 +116,7 @@ Status Spin::onCycleUpdate()
   double remaining_yaw = abs(cmd_yaw_) - abs(relative_yaw_);
   if (remaining_yaw <= 0) {
     stopRobot();
-    return Status::SUCCEEDED;
+    return Status::FAILED;
   }
 
   double vel = sqrt(2 * rotational_acc_lim_ * remaining_yaw);
