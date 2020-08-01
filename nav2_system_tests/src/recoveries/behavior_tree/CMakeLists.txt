@@ -1,14 +1,3 @@
-set(test_behavior_tree_recovery_exec test_behavior_tree_recovery_node)
-
-ament_add_gtest_executable(${test_behavior_tree_recovery_exec}
-  test_behavior_tree_recovery_node.cpp
-  behavior_tree_recovery_tester.cpp
-)
-
-ament_target_dependencies(${test_backup_recovery_exec}
-  ${dependencies}
-)
-
 ament_add_test(test_behavior_tree_recovery_force_spin_failure
   GENERATE_RESULT_FOR_RETURN_CODE_ZERO
   COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/test_behavior_tree_recovery_launch.py"

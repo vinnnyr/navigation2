@@ -83,12 +83,11 @@ def generate_launch_description():
 
 def main(argv=sys.argv[1:]):
     ld = generate_launch_description()
-
-    testExecutable = os.getenv('TEST_EXECUTABLE')
-
+    
     test1_action = ExecuteProcess(
-        cmd=[testExecutable],
-        name='test_backup_recovery_node',
+        cmd=[os.path.join(os.getenv('TEST_DIR'), 'tester_node.py'),
+             '-r', '-2.0', '-0.5', '0.0', '2.0'],
+        name='tester_node',
         output='screen')
 
     lts = LaunchTestService()
