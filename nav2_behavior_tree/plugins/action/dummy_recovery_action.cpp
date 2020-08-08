@@ -30,13 +30,12 @@ DummyRecoveryAction::DummyRecoveryAction(
   getInput("return_success", return_success);
 
   // Populate the input message
-  if returnSuccess{
-    goal_.command = "Testing success";
-  };
+  if (return_success){
+    goal_.command.data = std::string("Testing success");
+  }
   else{
-    goal_.command = "Testing failure on run";
-  };
-
+    goal_.command.data = std::string("Testing failure on run");
+  }
 }
 
 void DummyRecoveryAction::on_tick()
