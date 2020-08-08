@@ -22,7 +22,7 @@
 #include "gtest/gtest.h"
 #include "rclcpp/rclcpp.hpp"
 
-#include "test_recoveries.hpp"
+#include "nav2_recoveries/test_recoveries.hpp"
 
 using nav2_recoveries::Recovery;
 using nav2_recoveries::Status;
