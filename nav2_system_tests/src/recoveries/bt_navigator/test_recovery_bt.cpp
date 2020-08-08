@@ -59,7 +59,9 @@ int main(int argc, char ** argv)
     auto recovery_ = std::make_shared<DummyRecovery>();
     recovery_->configure(node_lifecycle_, "Recovery", tf_buffer_, collision_checker_);
     recovery_->activate();
+    while(rclcpp::ok()){
 
+    };
     // shutdown ROS
     rclcpp::shutdown();
     
