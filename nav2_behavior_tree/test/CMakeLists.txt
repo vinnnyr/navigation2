@@ -1,6 +1,12 @@
 ament_add_gtest(test_bt_conversions test_bt_conversions.cpp)
 ament_target_dependencies(test_bt_conversions ${dependencies})
 
+ament_add_gtest(test_round_robin_recovery test_round_robin_recovery.cpp)
+target_link_libraries(test_round_robin_recovery nav2_back_up_action_bt_node)
+target_link_libraries(test_round_robin_recovery nav2_spin_action_bt_node)
+target_link_libraries(test_round_robin_recovery nav2_wait_action_bt_node)
+ament_target_dependencies(test_round_robin_recovery ${dependencies})
+
 add_subdirectory(plugins/condition)
 add_subdirectory(plugins/decorator)
 add_subdirectory(plugins/control)

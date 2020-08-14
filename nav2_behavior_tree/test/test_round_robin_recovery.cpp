@@ -21,8 +21,9 @@
 #include "behaviortree_cpp_v3/bt_factory.h"
 
 #include "test_action_server.hpp"
+#include "nav2_behavior_tree/plugins/action/back_up_action.hpp"
 #include "nav2_behavior_tree/plugins/action/spin_action.hpp"
-
+#include "nav2_behavior_tree/plugins/action/wait_action.hpp"
 class SpinActionServer : public TestActionServer<nav2_msgs::action::Spin>
 {
 public:
@@ -37,12 +38,41 @@ protected:
   {}
 };
 
-class SpinActionTestFixture : public ::testing::Test
+class BackUpActionServer : public TestActionServer<nav2_msgs::action::BackUp>
+{
+public:
+  BackUpActionServer()
+  : TestActionServer("back_up")
+  {}
+
+protected:
+  void execute(
+    const typename std::shared_ptr<rclcpp_action::ServerGoalHandle<nav2_msgs::action::BackUp>>)
+  override
+  {}
+};
+
+class WaitActionServer : public TestActionServer<nav2_msgs::action::Wait>
+{
+public:
+  WaitActionServer()
+  : TestActionServer("wait")
+  {}
+
+protected:
+  void execute(
+    const typename std::shared_ptr<rclcpp_action::ServerGoalHandle<nav2_msgs::action::Wait>>)
+  override
+  {}
+};
+
+
+class RoundRobinRecoveryActionTestFixture : public ::testing::Test
 {
 public:
   static void SetUpTestCase()
   {
-    node_ = std::make_shared<rclcpp::Node>("spin_action_test_fixture");
+    node_ = std::make_shared<rclcpp::Node>("round_robin_recovery_test_fixture");
     factory_ = std::make_shared<BT::BehaviorTreeFactory>();
     config_ = new BT::NodeConfiguration();
 
@@ -97,13 +127,13 @@ protected:
   static std::shared_ptr<BT::Tree> tree_;
 };
 
-rclcpp::Node::SharedPtr SpinActionTestFixture::node_ = nullptr;
-std::shared_ptr<SpinActionServer> SpinActionTestFixture::action_server_ = nullptr;
-BT::NodeConfiguration * SpinActionTestFixture::config_ = nullptr;
-std::shared_ptr<BT::BehaviorTreeFactory> SpinActionTestFixture::factory_ = nullptr;
-std::shared_ptr<BT::Tree> SpinActionTestFixture::tree_ = nullptr;
+rclcpp::Node::SharedPtr RoundRobinRecoveryActionTestFixture::node_ = nullptr;
+std::shared_ptr<SpinActionServer> RoundRobinRecoveryActionTestFixture::action_server_ = nullptr;
+BT::NodeConfiguration * RoundRobinRecoveryActionTestFixture::config_ = nullptr;
+std::shared_ptr<BT::BehaviorTreeFactory> RoundRobinRecoveryActionTestFixture::factory_ = nullptr;
+std::shared_ptr<BT::Tree> RoundRobinRecoveryActionTestFixture::tree_ = nullptr;
 
-TEST_F(SpinActionTestFixture, test_ports)
+TEST_F(RoundRobinRecoveryActionTestFixture, test_ports)
 {
   std::string xml_txt =
     R"(
@@ -128,23 +158,6 @@ TEST_F(SpinActionTestFixture, test_ports)
   EXPECT_EQ(tree_->rootNode()->getInput<double>("spin_dist"), 3.14);
 }
 
-TEST_F(SpinActionTestFixture, test_tick)
-{
-  std::string xml_txt =
-    R"(
-      <root main_tree_to_execute = "MainTree" >
-        <BehaviorTree ID="MainTree">
-            <Spin spin_dist="3.14" />
-        </BehaviorTree>
-      </root>)";
-
-  tree_ = std::make_shared<BT::Tree>(factory_->createTreeFromText(xml_txt, config_->blackboard));
-  EXPECT_EQ(config_->blackboard->get<int>("number_recoveries"), 0);
-  EXPECT_EQ(tree_->rootNode()->executeTick(), BT::NodeStatus::RUNNING);
-  EXPECT_EQ(config_->blackboard->get<int>("number_recoveries"), 1);
-  EXPECT_EQ(action_server_->getCurrentGoal()->target_yaw, 3.14f);
-}
-
 int main(int argc, char ** argv)
 {
   ::testing::InitGoogleTest(&argc, argv);
@@ -153,9 +166,9 @@ int main(int argc, char ** argv)
   rclcpp::init(argc, argv);
 
   // initialize action server and spin on new thread
-  SpinActionTestFixture::action_server_ = std::make_shared<SpinActionServer>();
+  RoundRobinRecoveryActionTestFixture::action_server_ = std::make_shared<SpinActionServer>();
   std::thread server_thread([]() {
-      rclcpp::spin(SpinActionTestFixture::action_server_);
+      rclcpp::spin(RoundRobinRecoveryActionTestFixture::action_server_);
     });
 
   int all_successful = RUN_ALL_TESTS();
