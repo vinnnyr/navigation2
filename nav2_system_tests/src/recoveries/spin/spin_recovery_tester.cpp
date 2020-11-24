@@ -89,8 +89,6 @@ void SpinRecoveryTester::activate()
       rclcpp::spin_some(node_);
     }
   } else {
-    sendFakeFootprint();
-    sendFakeCostmap();
     sendFakeOdom(0.0);
   }
 
@@ -135,8 +133,6 @@ bool SpinRecoveryTester::defaultSpinRecoveryTest(
 
   if (make_fake_costmap_) {
     sendFakeOdom(0.0);
-    sendFakeFootprint();
-    sendFakeCostmap();
   }
 
   auto goal_msg = Spin::Goal();
@@ -145,8 +141,7 @@ bool SpinRecoveryTester::defaultSpinRecoveryTest(
   // Intialize fake costmap
   if (make_fake_costmap_) {
     sendFakeOdom(0.0);
-    sendFakeFootprint();
-    sendFakeCostmap();
+    sendFakeCostmap(target_yaw);
   }
 
   geometry_msgs::msg::PoseStamped initial_pose;
@@ -184,18 +179,16 @@ bool SpinRecoveryTester::defaultSpinRecoveryTest(
   if (make_fake_costmap_) {  // if we are faking the costmap, we will fake success.
     sendFakeOdom(0.0);
     RCLCPP_INFO(node_->get_logger(), "target_yaw %lf", target_yaw);
-    sendFakeFootprint();
-    sendFakeCostmap();
+    sendFakeCostmap(target_yaw);
     // Slowly increment command yaw by increment to simulate the robot slowly spinning into place
-    float step_size = target_yaw / 360;
+    float step_size = tolerance / 10.0;
     for (float command_yaw = 0.0;
       abs(command_yaw) <= abs(target_yaw);
       command_yaw = command_yaw + step_size)
     {
-      sendFakeFootprint();
-      sendFakeCostmap();
+      sendFakeCostmap(target_yaw);
       sendFakeOdom(command_yaw);
-      rclcpp::sleep_for(std::chrono::milliseconds(1));
+      rclcpp::sleep_for(std::chrono::milliseconds(10));
     }
     sendFakeOdom(target_yaw);
     RCLCPP_INFO(node_->get_logger(), "After sending goal");
@@ -255,46 +248,23 @@ bool SpinRecoveryTester::defaultSpinRecoveryTest(
   return true;
 }
 
-void SpinRecoveryTester::sendFakeFootprint()
-{
-  geometry_msgs::msg::PolygonStamped fake_polygon;
-  geometry_msgs::msg::Point32 pt1, pt2, pt3, pt4;
-  pt1.x = -1.0;
-  pt1.y = 1.0;
-  fake_polygon.polygon.points.push_back(pt1);
-  pt2.x = 1.0;
-  pt2.y = 1.0;
-  fake_polygon.polygon.points.push_back(pt2);
-  pt3.x = 1.0;
-  pt3.y = -1.0;
-  fake_polygon.polygon.points.push_back(pt3);
-  pt4.x = -1.0;
-  pt4.y = -1.0;
-  fake_polygon.polygon.points.push_back(pt4);
-
-  fake_polygon.header.frame_id = "odom";
-  fake_polygon.header.stamp = rclcpp::Clock().now();
-
-  fake_footprint_publisher_->publish(fake_polygon);
-}
-
-void SpinRecoveryTester::sendFakeCostmap()
+void SpinRecoveryTester::sendFakeCostmap(float angle)
 {
   nav2_msgs::msg::Costmap fake_costmap;
 
   fake_costmap.header.frame_id = "odom";
   fake_costmap.header.stamp = rclcpp::Clock().now();
   fake_costmap.metadata.layer = "master";
-  fake_costmap.metadata.resolution = .1;
+  fake_costmap.metadata.resolution = 1;
   fake_costmap.metadata.size_x = 10;
   fake_costmap.metadata.size_y = 10;
   fake_costmap.metadata.origin.position.x = 0;
   fake_costmap.metadata.origin.position.y = 0;
   fake_costmap.metadata.origin.orientation.w = 1.0;
   float costmap_val = 0;
-  for (int ix = 50; ix >= -50; ix--) {
-    for (int iy = 50; iy >= -50; iy--) {
-      if (iy <= 0 && ix <= 0) {
+  for (int ix = 0; ix <= 10; ix++) {
+    for (int iy = 0; iy <= 10; iy++) {
+      if (iy >= 5 && ix >= 6 && angle >= M_2_PIf32) {
         costmap_val = 255;
       }
       else {
