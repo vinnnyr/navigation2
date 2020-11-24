@@ -261,7 +261,7 @@ void SpinRecoveryTester::sendFakeCostmap(float angle)
   float costmap_val = 0;
   for (int ix = 0; ix < 100; ix++) {
     for (int iy = 0; iy < 100; iy++) {
-      if(abs(angle) > M_PI_2f32) {
+      if (abs(angle) > M_PI_2f32) {
         // fake obstacles in the way so we get failure due to potential collision
         costmap_val = 100;
       }
