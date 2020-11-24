@@ -255,20 +255,19 @@ void SpinRecoveryTester::sendFakeCostmap(float angle)
   fake_costmap.header.frame_id = "odom";
   fake_costmap.header.stamp = rclcpp::Clock().now();
   fake_costmap.metadata.layer = "master";
-  fake_costmap.metadata.resolution = 1;
-  fake_costmap.metadata.size_x = 10;
-  fake_costmap.metadata.size_y = 10;
+  fake_costmap.metadata.resolution = 1.;
+  fake_costmap.metadata.size_x = 100;
+  fake_costmap.metadata.size_y = 100;
   fake_costmap.metadata.origin.position.x = 0;
   fake_costmap.metadata.origin.position.y = 0;
   fake_costmap.metadata.origin.orientation.w = 1.0;
   float costmap_val = 0;
-  for (int ix = 0; ix <= 10; ix++) {
-    for (int iy = 0; iy <= 10; iy++) {
-      if (iy >= 5 && ix >= 6 && angle >= M_2_PIf32) {
-        costmap_val = 255;
-      }
-      else {
-        costmap_val = 0;
+  for (int ix = 0; ix < 100; ix++) {
+    for (int iy = 0; iy < 100; iy++) {
+      if (iy >= 50 && ix >= 50) {
+        if(fabs(angle) >= M_PI_2f32) {
+          costmap_val = 95.0;
+        }
       }
       fake_costmap.data.push_back(costmap_val);
     }
