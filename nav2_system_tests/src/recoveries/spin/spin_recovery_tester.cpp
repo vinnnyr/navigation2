@@ -174,8 +174,8 @@ bool SpinRecoveryTester::defaultSpinRecoveryTest(
 
   if (make_fake_costmap_) {  // if we are faking the costmap, we will fake success.
     sendFakeOdom(0.0);
-    RCLCPP_INFO(node_->get_logger(), "target_yaw %lf", target_yaw);
     sendFakeCostmap(target_yaw);
+    RCLCPP_INFO(node_->get_logger(), "target_yaw %lf", target_yaw);
     // Slowly increment command yaw by increment to simulate the robot slowly spinning into place
     float step_size = tolerance / 4.0;
     for (float command_yaw = 0.0;
@@ -183,9 +183,11 @@ bool SpinRecoveryTester::defaultSpinRecoveryTest(
       command_yaw = command_yaw + step_size)
     {
       sendFakeOdom(command_yaw);
-      rclcpp::sleep_for(std::chrono::milliseconds(10));
+      sendFakeCostmap(target_yaw);
+      rclcpp::sleep_for(std::chrono::milliseconds(1));
     }
     sendFakeOdom(target_yaw);
+    sendFakeCostmap(target_yaw);
     RCLCPP_INFO(node_->get_logger(), "After sending goal");
   }
   if (rclcpp::spin_until_future_complete(node_, result_future) !=
@@ -259,7 +261,8 @@ void SpinRecoveryTester::sendFakeCostmap(float angle)
   float costmap_val = 0;
   for (int ix = 0; ix < 100; ix++) {
     for (int iy = 0; iy < 100; iy++) {
-      if(abs(angle) >= M_PI_2f32) {
+      if(abs(angle) > M_PI_2f32) {
+        // fake obstacles in the way so we get failure due to potential collision
         costmap_val = 100;
       }
       fake_costmap.data.push_back(costmap_val);
