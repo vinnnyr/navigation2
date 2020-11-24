@@ -58,10 +58,6 @@ SpinRecoveryTester::SpinRecoveryTester()
     node_->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>("initialpose", 10);
   fake_costmap_publisher_ =
     node_->create_publisher<nav2_msgs::msg::Costmap>("local_costmap/costmap_raw", 10);
-  fake_footprint_publisher_ =
-    node_->create_publisher<geometry_msgs::msg::PolygonStamped>(
-    "local_costmap/published_footprint",
-    10);
 
   subscription_ = node_->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
     "amcl_pose", rclcpp::QoS(rclcpp::KeepLast(1)).transient_local().reliable(),
@@ -263,10 +259,8 @@ void SpinRecoveryTester::sendFakeCostmap(float angle)
   float costmap_val = 0;
   for (int ix = 0; ix < 100; ix++) {
     for (int iy = 0; iy < 100; iy++) {
-      if (iy >= 50) {
-        if(abs(angle) >= M_PI_2f32) {
-          costmap_val = 255.0;
-        }
+      if(abs(angle) >= M_PI_2f32) {
+        costmap_val = 100;
       }
       fake_costmap.data.push_back(costmap_val);
     }
