@@ -112,12 +112,6 @@ namespace nav2_system_tests
     class BehaviorTreeTester
     {
       public:
-        using ComputePathToPose = nav2_msgs::action::ComputePathToPose;
-        using FollowPath = nav2_msgs::action::FollowPath;
-        using Spin = nav2_msgs::action::Spin;
-        using Wait = nav2_msgs::action::Wait;
-        using BackUp = nav2_msgs::action::BackUp;
-
         BehaviorTreeTester();
         ~BehaviorTreeTester();
 
@@ -133,17 +127,6 @@ namespace nav2_system_tests
         bool is_active_;
 
         rclcpp::Node::SharedPtr node_;
-
-        // Action Client to call action (that will be faked)
-        rclcpp_action::Client<ComputePathToPose>::SharedPtr compute_path_to_pose_client_ptr_;
-        rclcpp_action::Client<FollowPath>::SharedPtr follow_path_client_ptr_;
-        rclcpp_action::Client<Spin>::SharedPtr spin_client_ptr_;
-        rclcpp_action::Client<Wait>::SharedPtr wait_client_ptr_;
-        rclcpp_action::Client<BackUp>::SharedPtr back_up_client_ptr_;
-        // Do I need to create a "client" for the Clear CostMap service
-
-        template <class ActionT>
-        rclcpp_action::Client<ActionT>::SharedPtr create_client(string clientName);
     }
 
 }  // namespace nav2_system_tests
