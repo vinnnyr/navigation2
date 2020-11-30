@@ -14,8 +14,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License. Reserved.
 
-#ifndef BEHAVIOR_TREE_TESTER_HPP_
-#define BEHAVIOR_TREE_TESTER_HPP_
+#ifndef BEHAVIOR_TREE__BEHAVIOR_TREE_TESTER_HPP_
+#define BEHAVIOR_TREE__BEHAVIOR_TREE_TESTER_HPP_
 
 #include <gtest/gtest.h>
 #include <memory>
@@ -23,7 +23,7 @@
 
 #include "behaviortree_cpp_v3/bt_factory.h"
 
-// todo need to fix CMakeLists so that we get the orginal headers
+// todo need to fix CMakeLists so that we get the orginal headerss
 #include "test_action_server.hpp"
 #include "test_service.hpp"
 // #include "nav2_behavior_tree/test/test_action_server.hpp"
@@ -38,93 +38,105 @@
 
 namespace nav2_system_tests
 {
-    template<class ActionT>
-    class FakeActionServer : public TestActionServer<ActionT>
-    {
-    public:
-      FakeActionServer()
-      : TestActionServer<ActionT>("fake_action_server")
-      {}
+template<class ActionT>
+class FakeActionServer : public TestActionServer<ActionT>
+{
+public:
+  FakeActionServer()
+  : TestActionServer<ActionT>("fake_action_server")
+  {
+  }
 
-    protected:
-      void execute(
-        const typename std::shared_ptr<rclcpp_action::ServerGoalHandle<ActionT>>
-        goal_handle)
-      override
-      {
-          auto result = std::make_shared<typename ActionT::Result>();
-          bool return_success = getReturnSuccess();
-          if (return_success) {
-              goal_handle->succeed(result);
-          } else {
-              goal_handle->abort(result);
-          }
-      }
-      bool getReturnSuccess();
-    };
+protected:
+  void execute(
+    const typename std::shared_ptr<rclcpp_action::ServerGoalHandle<ActionT>>
+    goal_handle)
+  override
+  {
+    auto result = std::make_shared<typename ActionT::Result>();
+    bool return_success = getReturnSuccess();
+    if (return_success) {
+      goal_handle->succeed(result);
+    } else {
+      goal_handle->abort(result);
+    }
+  }
+  bool getReturnSuccess();
+};
 
-    class ClearEntireCostmapService : public TestService<nav2_msgs::srv::ClearEntireCostmap>
-    {
-    public:
-    ClearEntireCostmapService()
-    : TestService("clear_entire_costmap")
-    {}
-    };
+class ClearEntireCostmapService : public TestService<nav2_msgs::srv::ClearEntireCostmap>
+{
+public:
+  ClearEntireCostmapService()
+  : TestService("clear_entire_costmap")
+  {
+  }
+};
 
-    class ComputePathToPoseActionServer : public FakeActionServer<nav2_msgs::action::ComputePathToPose>
-    {
-      public:
-        ComputePathToPoseActionServer() : FakeActionServer()
-        {}
-    };
-    
-    class FollowPathActionServer : public FakeActionServer<nav2_msgs::action::FollowPath>
-    {
-      public:
-        FollowPathActionServer() : FakeActionServer()
-        {}
-    };
+class ComputePathToPoseActionServer : public FakeActionServer<nav2_msgs::action::ComputePathToPose>
+{
+public:
+  ComputePathToPoseActionServer()
+  : FakeActionServer()
+  {
+  }
+};
 
-    class SpinActionServer : public FakeActionServer<nav2_msgs::action::Spin>
-    {
-      public:
-        SpinActionServer() : FakeActionServer()
-        {}
-    };
-    
-    class WaitActionServer : public FakeActionServer<nav2_msgs::action::Wait>
-    {
-      public:
-        WaitActionServer() : FakeActionServer()
-        {}
-    };
-    
-    class BackUpActionServer : public FakeActionServer<nav2_msgs::action::BackUp>
-    {
-      public:
-        BackUpActionServer() : FakeActionServer()
-        {}
-    };
+class FollowPathActionServer : public FakeActionServer<nav2_msgs::action::FollowPath>
+{
+public:
+  FollowPathActionServer()
+  : FakeActionServer()
+  {
+  }
+};
 
-    class BehaviorTreeTester
-    {
-      public:
-        BehaviorTreeTester();
-        ~BehaviorTreeTester();
+class SpinActionServer : public FakeActionServer<nav2_msgs::action::Spin>
+{
+public:
+  SpinActionServer()
+  : FakeActionServer()
+  {
+  }
+};
 
-        void activate();
+class WaitActionServer : public FakeActionServer<nav2_msgs::action::Wait>
+{
+public:
+  WaitActionServer()
+  : FakeActionServer()
+  {
+  }
+};
 
-        void deactivate();
-      
-        bool isActive() const
-        {
-          return is_active_;
-        }
-      private:
-        bool is_active_;
-        rclcpp::Node::SharedPtr node_;
-    };
+class BackUpActionServer : public FakeActionServer<nav2_msgs::action::BackUp>
+{
+public:
+  BackUpActionServer()
+  : FakeActionServer()
+  {
+  }
+};
 
-}  // namespace nav2_system_tests
+class BehaviorTreeTester
+{
+public:
+  BehaviorTreeTester();
+  ~BehaviorTreeTester();
 
-#endif // BEHAVIOR_TREE_TESTER_HPP_
+  void activate();
+
+  void deactivate();
+
+  bool isActive() const
+  {
+    return is_active_;
+  }
+
+private:
+  bool is_active_;
+  rclcpp::Node::SharedPtr node_;
+};
+
+} // namespace nav2_system_tests
+#endif // BEHAVIOR_TREE__BEHAVIOR_TREE_TESTER_HPP_

@@ -35,9 +35,9 @@ BehaviorTreeTester::BehaviorTreeTester()
 : is_active_(false)
 {
   node_ = rclcpp::Node::make_shared("behavior_tree_test");
-  
+
   // This could probably be simplified into template classes
-  auto compute_path_to_pose_client_ptr_ = 
+  auto compute_path_to_pose_client_ptr_ =
     rclcpp_action::create_client<nav2_msgs::action::ComputePathToPose>(
     node_->get_node_base_interface(),
     node_->get_node_graph_interface(),
@@ -68,36 +68,35 @@ BehaviorTreeTester::BehaviorTreeTester()
     node_->get_node_logging_interface(),
     node_->get_node_waitables_interface(),
     "back_up");
-} 
+}
 
 BehaviorTreeTester::~BehaviorTreeTester()
 {
-    if (is_active_) {
-        deactivate();
-    }
+  if (is_active_) {
+    deactivate();
+  }
 }
 
 void BehaviorTreeTester::activate()
 {
-    if (is_active_) {
-        throw std::runtime_error("Trying to activate while already activated");
-        return;
-    }
+  if (is_active_) {
+    throw std::runtime_error("Trying to activate while already activated");
+    return;
+  }
 
-    std::this_thread::sleep_for(10s);
+  std::this_thread::sleep_for(10s);
 
-    //checkForActionClient
+  // checkForActionClient
 
-    RCLCPP_INFO(this->node_->get_logger(), "All action servers are ready");
-    is_active_ = true;
+  RCLCPP_INFO(this->node_->get_logger(), "All action servers are ready");
+  is_active_ = true;
 }
 
 void BehaviorTreeTester::deactivate()
 {
-    if(!is_active_) {
-        throw std::runtime_error("Trying to deactivate while already inactive");
-    }
-    is_active_ = false;
+  if (!is_active_) {
+    throw std::runtime_error("Trying to deactivate while already inactive");
+  }
+  is_active_ = false;
 }
-
-}
+} // namespace nav2_system_tests
