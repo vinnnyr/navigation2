@@ -36,13 +36,39 @@ BehaviorTreeTester::BehaviorTreeTester()
 {
   node_ = rclcpp::Node::make_shared("behavior_tree_test");
   
-  compute_path_to_pose_client_ptr_ = rclcpp_action::create_client("compute_path_to_pose")
-  follow_path_client_ptr_ = rclcpp_action::create_client("follow_path")
-  spin_client_ptr_ = rclcpp_action::create_client("spin")
-  wait_client_ptr_ = rclcpp_action::create_client("wait")
-  back_up_client_ptr_ = rclcpp_action::create_client("back_up")
-
-}
+  // This could probably be simplified into template classes
+  auto compute_path_to_pose_client_ptr_ = 
+    rclcpp_action::create_client<nav2_msgs::action::ComputePathToPose>(
+    node_->get_node_base_interface(),
+    node_->get_node_graph_interface(),
+    node_->get_node_logging_interface(),
+    node_->get_node_waitables_interface(),
+    "compute_path_to_pose");
+  auto follow_path_client_ptr_ = rclcpp_action::create_client<nav2_msgs::action::FollowPath>(
+    node_->get_node_base_interface(),
+    node_->get_node_graph_interface(),
+    node_->get_node_logging_interface(),
+    node_->get_node_waitables_interface(),
+    "follow_path");
+  auto spin_client_ptr_ = rclcpp_action::create_client<nav2_msgs::action::Spin>(
+    node_->get_node_base_interface(),
+    node_->get_node_graph_interface(),
+    node_->get_node_logging_interface(),
+    node_->get_node_waitables_interface(),
+    "spin");
+  auto wait_client_ptr_ = rclcpp_action::create_client<nav2_msgs::action::Wait>(
+    node_->get_node_base_interface(),
+    node_->get_node_graph_interface(),
+    node_->get_node_logging_interface(),
+    node_->get_node_waitables_interface(),
+    "wait");
+  auto back_up_client_ptr_ = rclcpp_action::create_client<nav2_msgs::action::BackUp>(
+    node_->get_node_base_interface(),
+    node_->get_node_graph_interface(),
+    node_->get_node_logging_interface(),
+    node_->get_node_waitables_interface(),
+    "back_up");
+} 
 
 BehaviorTreeTester::~BehaviorTreeTester()
 {
@@ -74,12 +100,4 @@ void BehaviorTreeTester::deactivate()
     is_active_ = false;
 }
 
-rclcpp_action::Client<ActionT>::SharedPtr BehaviorTreeTester::create_client(string clientName)
-{
-    return rclcpp_action::create_client<ActionT>(
-    node_->get_node_base_interface(),
-    node_->get_node_graph_interface(),
-    node_->get_node_logging_interface(),
-    node_->get_node_waitables_interface(),
-    clientName);
 }

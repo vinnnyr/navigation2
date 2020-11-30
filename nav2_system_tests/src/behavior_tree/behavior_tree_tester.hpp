@@ -23,8 +23,11 @@
 
 #include "behaviortree_cpp_v3/bt_factory.h"
 
-#include "nav2_behavior_tree/test/test_action_server.hpp"
-#include "nav2_behavior_tree/test/test_service.hpp"
+// todo need to fix CMakeLists so that we get the orginal headers
+#include "test_action_server.hpp"
+#include "test_service.hpp"
+// #include "nav2_behavior_tree/test/test_action_server.hpp"
+// #include "nav2_behavior_tree/test/test_service.hpp"
 
 #include "nav2_behavior_tree/plugins/action/compute_path_to_pose_action.hpp"
 #include "nav2_behavior_tree/plugins/action/follow_path_action.hpp"
@@ -40,23 +43,24 @@ namespace nav2_system_tests
     {
     public:
       FakeActionServer()
-      : FakeActionServer("fake")
+      : TestActionServer<ActionT>("fake_action_server")
       {}
 
     protected:
       void execute(
-        const typename std::shared_ptr<rclpp_action::ServerGoalHandle<ActionT>>
+        const typename std::shared_ptr<rclcpp_action::ServerGoalHandle<ActionT>>
         goal_handle)
       override
       {
-          ActionT::Result::SharedPtr result = std::make_shared<ActionT::Result>();
+          auto result = std::make_shared<typename ActionT::Result>();
           bool return_success = getReturnSuccess();
           if (return_success) {
-              goal_handle->success(result);
+              goal_handle->succeed(result);
           } else {
               goal_handle->abort(result);
           }
       }
+      bool getReturnSuccess();
     };
 
     class ClearEntireCostmapService : public TestService<nav2_msgs::srv::ClearEntireCostmap>
@@ -70,44 +74,37 @@ namespace nav2_system_tests
     class ComputePathToPoseActionServer : public FakeActionServer<nav2_msgs::action::ComputePathToPose>
     {
       public:
-        ComputePathToPoseActionServer() : FakeActionServer("ComputePathToPoseActionServer")
+        ComputePathToPoseActionServer() : FakeActionServer()
         {}
-    }
+    };
     
     class FollowPathActionServer : public FakeActionServer<nav2_msgs::action::FollowPath>
     {
       public:
-        FollowPathActionServer() : FakeActionServer("FollowPathActionServer")
+        FollowPathActionServer() : FakeActionServer()
         {}
-    }
-    // Since Clear Costmap is a service not an action server, we will have to 
-    // figure out how to fake that
-    // class ClearCostmapActionServer : public FakeActionServer<nav2_msgs::action::ClearCostmap>
-    // {
-    //   public:
-    //     FollowPathActionServer() : FakeActionServer("FollowPathActionServer")
-    //     {}
-    // }
+    };
+
     class SpinActionServer : public FakeActionServer<nav2_msgs::action::Spin>
     {
       public:
-        SpinActionServer() : FakeActionServer("SpinActionServer")
+        SpinActionServer() : FakeActionServer()
         {}
-    }
+    };
     
     class WaitActionServer : public FakeActionServer<nav2_msgs::action::Wait>
     {
       public:
-        WaitActionServer() : FakeActionServer("WaitActionServer")
+        WaitActionServer() : FakeActionServer()
         {}
-    }
+    };
     
     class BackUpActionServer : public FakeActionServer<nav2_msgs::action::BackUp>
     {
       public:
-        BackUpActionServer() : FakeActionServer("BackUpActionServer")
+        BackUpActionServer() : FakeActionServer()
         {}
-    }
+    };
 
     class BehaviorTreeTester
     {
@@ -125,9 +122,8 @@ namespace nav2_system_tests
         }
       private:
         bool is_active_;
-
         rclcpp::Node::SharedPtr node_;
-    }
+    };
 
 }  // namespace nav2_system_tests
 
