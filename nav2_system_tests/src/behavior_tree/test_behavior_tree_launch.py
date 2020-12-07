@@ -52,7 +52,7 @@ def generate_launch_description():
             convert_types=True)
 
     lifecycle_nodes = ['bt_navigator']
-    
+
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
     # https://github.com/ros/geometry2/issues/32
@@ -61,7 +61,6 @@ def generate_launch_description():
     #              https://github.com/ros2/launch_ros/issues/56
     remappings = [('/tf', 'tf'),
                   ('/tf_static', 'tf_static')]
-
 
     return LaunchDescription([
         SetEnvironmentVariable('RCUTILS_CONSOLE_STDOUT_LINE_BUFFERED', '1'),

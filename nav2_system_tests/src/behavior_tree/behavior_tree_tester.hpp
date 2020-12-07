@@ -118,7 +118,8 @@ public:
   }
 };
 
-struct should_action_server_return_success_t {
+struct should_action_server_return_success_t
+{
   bool compute_path_to_pose = true;
   bool follow_path = true;
   bool wait = true;
@@ -141,13 +142,13 @@ public:
     return is_active_;
   }
 
-  bool defaultBehaviorTreeTest(struct 
-    should_action_server_return_success_t test_case);
+  bool defaultBehaviorTreeTest(
+    struct should_action_server_return_success_t test_case);
 
 private:
   bool is_active_;
   rclcpp::Node::SharedPtr node_;
 };
 
-} // namespace nav2_system_tests
-#endif // BEHAVIOR_TREE__BEHAVIOR_TREE_TESTER_HPP_
+}  //  namespace nav2_system_tests
+#endif  //  BEHAVIOR_TREE__BEHAVIOR_TREE_TESTER_HPP_

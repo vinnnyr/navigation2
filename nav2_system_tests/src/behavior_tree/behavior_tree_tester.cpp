@@ -101,14 +101,25 @@ void BehaviorTreeTester::deactivate()
 }
 
 bool BehaviorTreeTester::defaultBehaviorTreeTest(
-      struct should_action_server_return_success_t test_case) {
-      bool result;
-      if(test_case.wait){
-        result =  true;
-      }
-      else {
-        result =  false;
-      }
-      return result;
-    }
-} // namespace nav2_system_tests
+  struct should_action_server_return_success_t test_case)
+{
+  // This is where we use this structure to tell the BT to return particular status
+
+  if (!is_active_) {
+    RCLCPP_ERROR(node_->get_logger(), "Not activated");
+    return false;
+  }
+
+  // Sleep to let recovery server be ready for serving in multiple runs
+  std::this_thread::sleep_for(10s);
+
+  bool result;
+  if (test_case.wait) {
+    result = true;
+  } else {
+    result = false;
+  }
+  return result;
+}
+
+}  //  namespace nav2_system_tests

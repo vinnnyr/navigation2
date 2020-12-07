@@ -28,12 +28,12 @@ using namespace std::chrono_literals;
 using nav2_system_tests::BehaviorTreeTester;
 
 class BehaviorTreeTestFixture
-  : public :: testing::TestWithParam<std::tuple<float,float>>
+  : public ::testing::Test
 {
 public:
   static void SetUpTestCase()
   {
-    behavior_tree_tester =  new BehaviorTreeTester();
+    behavior_tree_tester = new BehaviorTreeTester();
     if (!behavior_tree_tester->isActive()) {
       behavior_tree_tester->activate();
     }
@@ -44,8 +44,6 @@ public:
     delete behavior_tree_tester;
     behavior_tree_tester = nullptr;
   }
-
-  static struct should_action_server_return_success_t test_case_1;
 
 protected:
   static BehaviorTreeTester * behavior_tree_tester;
@@ -61,7 +59,7 @@ TEST_F(BehaviorTreeTestFixture, TestAllSuccess)
     test_case_1
   );
 
-  EXPECT_EQ(true,success);
+  EXPECT_EQ(true, success);
 }
 
 int main(int argc, char ** argv)

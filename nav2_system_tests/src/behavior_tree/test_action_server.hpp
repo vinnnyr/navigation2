@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef TEST_ACTION_SERVER_HPP_
-#define TEST_ACTION_SERVER_HPP_
+#ifndef BEHAVIOR_TREE__TEST_ACTION_SERVER_HPP_
+#define BEHAVIOR_TREE__TEST_ACTION_SERVER_HPP_
 
 #include <string>
 #include <memory>
@@ -90,4 +90,4 @@ private:
   bool return_success_ = true;
 };
 
-#endif  // TEST_ACTION_SERVER_HPP_
+#endif  // BEHAVIOR_TREE__TEST_ACTION_SERVER_HPP_
