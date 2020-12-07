@@ -27,22 +27,6 @@ using namespace std::chrono_literals;
 
 using nav2_system_tests::BehaviorTreeTester;
 
-struct should_action_server_return_success_t {
-  bool compute_path_to_pose = true;
-  bool follow_path = true;
-  bool wait = true;
-  bool back_up = true;
-  bool spin = true;
-} 
-
-std::string testNameGenerator(const testing::TestParamInfo<std::tuple<float, float>> & param)
-{
-  std::string name = std::to_string(std::abs(std::get<0>(param.param))) + "_" + std::to_string(
-    std::get<1>(param.param));
-  name.erase(std::remove(name.begin(), name.end(), '.'), name.end());
-  return name;
-}
-
 class BehaviorTreeTestFixture
   : public :: testing::TestWithParam<std::tuple<float,float>>
 {
@@ -50,11 +34,10 @@ public:
   static void SetUpTestCase()
   {
     behavior_tree_tester =  new BehaviorTreeTester();
-    if (!behavior_tree_Tester->isActive()) {
+    if (!behavior_tree_tester->isActive()) {
       behavior_tree_tester->activate();
     }
   }
-}
 
   static void TearDownTestCase()
   {
@@ -62,24 +45,24 @@ public:
     behavior_tree_tester = nullptr;
   }
 
+  static struct should_action_server_return_success_t test_case_1;
+
 protected:
   static BehaviorTreeTester * behavior_tree_tester;
 };
 
 BehaviorTreeTester * BehaviorTreeTestFixture::behavior_tree_tester = nullptr;
 
-TEST_P(BehaviorTreeTestFixture, testBehaviorTree)
+TEST_F(BehaviorTreeTestFixture, TestAllSuccess)
 {
+  struct nav2_system_tests::should_action_server_return_success_t test_case_1;
+  bool success = false;
+  success = behavior_tree_tester->defaultBehaviorTreeTest(
+    test_case_1
+  );
 
+  EXPECT_EQ(true,success);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-  BehaviorTreeTests,
-  BehaviorTreeTestFixture,
-  ::testing::Values(
-  ),
-  testNameGenerator);
-)
 
 int main(int argc, char ** argv)
 {

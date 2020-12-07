@@ -99,4 +99,16 @@ void BehaviorTreeTester::deactivate()
   }
   is_active_ = false;
 }
+
+bool BehaviorTreeTester::defaultBehaviorTreeTest(
+      struct should_action_server_return_success_t test_case) {
+      bool result;
+      if(test_case.wait){
+        result =  true;
+      }
+      else {
+        result =  false;
+      }
+      return result;
+    }
 } // namespace nav2_system_tests

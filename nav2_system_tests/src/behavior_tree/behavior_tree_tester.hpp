@@ -118,6 +118,14 @@ public:
   }
 };
 
+struct should_action_server_return_success_t {
+  bool compute_path_to_pose = true;
+  bool follow_path = true;
+  bool wait = true;
+  bool back_up = true;
+  bool spin = true;
+};
+
 class BehaviorTreeTester
 {
 public:
@@ -132,6 +140,9 @@ public:
   {
     return is_active_;
   }
+
+  bool defaultBehaviorTreeTest(struct 
+    should_action_server_return_success_t test_case);
 
 private:
   bool is_active_;
