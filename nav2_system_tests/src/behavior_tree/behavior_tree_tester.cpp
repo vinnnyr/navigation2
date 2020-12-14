@@ -68,6 +68,9 @@ BehaviorTreeTester::BehaviorTreeTester()
     node_->get_node_logging_interface(),
     node_->get_node_waitables_interface(),
     "back_up");
+
+  publisher_ =
+    node_->create_publisher<geometry_msgs::msg::PoseStamped>("goal_pose", 10);
 }
 
 BehaviorTreeTester::~BehaviorTreeTester()
@@ -86,9 +89,6 @@ void BehaviorTreeTester::activate()
 
   std::this_thread::sleep_for(10s);
 
-  // checkForActionClient
-
-  RCLCPP_INFO(this->node_->get_logger(), "All action servers are ready");
   is_active_ = true;
 }
 
@@ -112,6 +112,7 @@ bool BehaviorTreeTester::defaultBehaviorTreeTest(
 
   // Sleep to let recovery server be ready for serving in multiple runs
   std::this_thread::sleep_for(10s);
+  sendGoalPose();
 
   bool result;
   if (test_case.wait) {
@@ -120,6 +121,22 @@ bool BehaviorTreeTester::defaultBehaviorTreeTest(
     result = false;
   }
   return result;
+}
+
+void BehaviorTreeTester::sendGoalPose() {
+  geometry_msgs::msg::PoseStamped pose;
+  pose.header.frame_id = "map";
+  pose.header.stamp = rclcpp::Time();
+  pose.pose.position.x = 0.0;
+  pose.pose.position.y = 0.0;
+  pose.pose.position.z = 0.0;
+  pose.pose.orientation.x = 0.0;
+  pose.pose.orientation.y = 0.0;
+  pose.pose.orientation.z = 0.0;
+  pose.pose.orientation.w = 1.0;
+
+  publisher_->publish(pose);
+  RCLCPP_INFO(node_->get_logger(), "Sent goal pose");
 }
 
 }  //  namespace nav2_system_tests

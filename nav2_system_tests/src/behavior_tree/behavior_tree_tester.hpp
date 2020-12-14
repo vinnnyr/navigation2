@@ -36,6 +36,8 @@
 #include "nav2_behavior_tree/plugins/action/wait_action.hpp"
 #include "nav2_behavior_tree/plugins/action/back_up_action.hpp"
 
+#include "geometry_msgs/msg/pose_stamped.hpp"
+
 namespace nav2_system_tests
 {
 template<class ActionT>
@@ -148,6 +150,11 @@ public:
 private:
   bool is_active_;
   rclcpp::Node::SharedPtr node_;
+
+  // Publisher to publish goal pose
+  rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr publisher_;
+  
+  void sendGoalPose();
 };
 
 }  //  namespace nav2_system_tests
